@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<!-- v4-booking: v4 + своя DEMO-запись (booking.js) и страницы мастеров (tools/generate.js).
+     Данные салона, услуг и мастеров — в data/site.js -->
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- DEMO-сайт: просим поисковики его не показывать -->
+  <meta name="robots" content="noindex">
+  <!-- Заголовок вкладки и описание для поисковиков. JS заменит их на нужный язык -->
+  <title>Dont Tell Mom Barbershop, Rīga</title>
+  <meta name="description" content="Dont Tell Mom Barbershop, Avotu iela 34, Rīga.">
+
+  <!-- Шрифты Google: Oswald (заголовки), Inter (текст), Caveat (рукописные подписи).
+       preconnect заранее открывает соединение — шрифты грузятся быстрее -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600&family=Oswald:wght@500;700&display=swap">
+
+  <!-- Подключаем стили. ?v=2 — метка версии: после больших правок увеличьте число,
+       и телефоны скачают файл заново, а не покажут старый из памяти -->
+  <link rel="stylesheet" href="style.css?v=34">
+  <link rel="stylesheet" href="booking.css?v=25">
+
+  <!-- Подключаем скрипт. defer = выполнить после того, как HTML загрузится -->
+  <!-- Сначала данные (data/site.js), потом сайт, потом виджет записи -->
+  <script src="data/site.js?v=26" defer></script>
+  <script src="script.js?v=40" defer></script>
+  <script src="booking.js?v=27" defer></script>
+  <!-- Браузер (Chrome, Edge) заранее готовит страницу сайта, на ссылку которой
+       навели курсор или нажали, — переход почти мгновенный. Другие браузеры это пропускают -->
+  <script type="speculationrules">
+    { "prerender": [{ "where": { "href_matches": "/*" }, "eagerness": "moderate" }] }
+  </script>
+</head>
+<body>
+
+
+  <!-- =========================================================
+       1. ШАПКА: логотип, меню, языки, кнопка записи
+       ========================================================= -->
+  <header class="header">
+    <div class="header__inner container">
+      <!-- Логотип: название берётся из CONFIG.name в script.js -->
+      <a href="#top" class="logo" data-config="shortName">DONT TELL MOM</a>
+
+      <!-- Меню по разделам страницы -->
+      <nav class="nav" id="nav" aria-label="Menu">
+        <a href="#about" data-i18n="nav.about"></a>
+        <a href="#services" data-i18n="nav.services"></a>
+        <a href="#team" data-i18n="nav.team"></a>
+        <a href="#gallery" data-i18n="nav.gallery"></a>
+        <a href="#reviews" data-i18n="nav.reviews"></a>
+        <!-- DEMO: страница магазина косметики -->
+        <a href="shop.html" data-i18n="nav.shop"></a>
+        <a href="#contacts" data-i18n="nav.contacts"></a>
+        <!-- Кнопка записи внутри меню (видна только на телефоне/планшете) -->
+        <a class="btn btn--dark nav__book" data-href="booking" data-i18n="common.book"></a>
+      </nav>
+
+      <!-- Переключатель языка. data-lang говорит, какой язык включить -->
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" class="lang__btn" data-lang="lv">LV</button>
+        <button type="button" class="lang__btn" data-lang="ru">RU</button>
+        <button type="button" class="lang__btn" data-lang="en">EN</button>
+      </div>
+
+      <!-- Кнопки записи (data-href="booking") открывают DEMO-запись (booking.js).
+           Без JavaScript ведут на Fresha салона -->
+      <a class="btn btn--dark header__book" data-href="booking" data-i18n="common.book"></a>
+
+      <!-- Кнопка-«бургер» для меню на телефоне -->
+      <button type="button" class="burger" id="burger" aria-controls="nav" aria-expanded="false" data-i18n-aria="nav.open">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+
+    <!-- =========================================================
+         2. ПЕРВЫЙ ЭКРАН: фон, заголовок, фраза, кнопки
+         ========================================================= -->
+    <section class="hero">
+      <!-- Фон. Сейчас фото. Видео можно включить позже (см. комментарий ниже) -->
+      <div class="hero__media">
+        <!-- Временное фото, сгенерировано ИИ. Заменить на настоящее фото салона -->
+        <img src="images/hero.jpg" alt="" width="1920" height="1080" fetchpriority="high">
+        <!--
+          Чтобы поставить видео вместо фото, положите файлы в images/ и раскомментируйте:
+          <video autoplay muted loop playsinline poster="images/hero.jpg">
+            <source src="images/hero.mp4" type="video/mp4">
+          </video>
+        -->
+      </div>
+
+      <div class="hero__content container">
+        <p class="hero__eyebrow" data-i18n="hero.eyebrow"></p>
+        <h1 class="hero__title" data-i18n="hero.title"></h1>
+        <p class="hero__text" data-i18n="hero.text"></p>
+        <div class="hero__actions">
+          <a class="btn btn--light" data-href="booking" data-i18n="common.book"></a>
+          <a class="btn btn--ghost" href="#services" data-i18n="hero.prices"></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         3. О БАРБЕРШОПЕ + 4 ПРИНЦИПА
+         ========================================================= -->
+    <section class="about section" id="about">
+      <div class="container about__grid">
+        <img class="about__photo" src="images/about.jpg" alt="" width="1200" height="1600" loading="lazy" data-i18n-alt="about.photoAlt">
+        <div class="about__text">
+          <p class="label" data-i18n="about.label"></p>
+          <h2 class="title" data-i18n="about.title"></h2>
+          <p data-i18n="about.p1"></p>
+          <p data-i18n="about.p2"></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="principles section" id="principles">
+      <div class="container">
+        <p class="label" data-i18n="principles.label"></p>
+        <h2 class="title" data-i18n="principles.title"></h2>
+
+        <!-- Четыре карточки. Тексты в TEXTS → principles в script.js -->
+        <div class="principles__grid">
+          <article class="card">
+            <span class="card__num">01</span>
+            <h3 data-i18n="principles.p1title"></h3>
+            <p data-i18n="principles.p1text"></p>
+          </article>
+          <article class="card">
+            <span class="card__num">02</span>
+            <h3 data-i18n="principles.p2title"></h3>
+            <p data-i18n="principles.p2text"></p>
+          </article>
+          <article class="card">
+            <span class="card__num">03</span>
+            <h3 data-i18n="principles.p3title"></h3>
+            <p data-i18n="principles.p3text"></p>
+          </article>
+          <article class="card">
+            <span class="card__num">04</span>
+            <h3 data-i18n="principles.p4title"></h3>
+            <p data-i18n="principles.p4text"></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         4. УСЛУГИ И ЦЕНЫ
+         Карточки с фото создаёт JS из SITE.services (data/site.js).
+         Нажатие открывает запись с этой услугой
+         ========================================================= -->
+    <section class="services section" id="services">
+      <div class="container">
+        <p class="label" data-i18n="services.label"></p>
+        <h2 class="title" data-i18n="services.title"></h2>
+        <p class="services__note" data-i18n="services.note"></p>
+
+        <!-- Вкладки категорий. data-category совпадает с category в SERVICES -->
+        <div class="tabs" role="tablist">
+          <button type="button" class="tabs__btn is-active" role="tab" aria-selected="true" data-category="haircut" data-i18n="services.tabHaircut"></button>
+          <button type="button" class="tabs__btn" role="tab" aria-selected="false" data-category="beard" data-i18n="services.tabBeard"></button>
+          <!-- Вкладка «Papildus» убрана: для неё нет услуг с фото.
+               Если появятся — верните кнопку с data-category="extras" -->
+        </div>
+
+        <!-- Сюда JS вставит карточки услуг с фото (из SERVICES в script.js) -->
+        <ul class="services__list" id="services-list"></ul>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         5. МАСТЕРА (плитки создаёт JS из SITE.masters, каждая ведёт на страницу мастера)
+         ========================================================= -->
+    <section class="team section" id="team">
+      <div class="container">
+        <p class="label" data-i18n="team.label"></p>
+        <h2 class="title" data-i18n="team.title"></h2>
+        <div class="team__grid" id="team-list"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         6. ГАЛЕРЕЯ РАБОТ (картинки создаёт JS из массива GALLERY)
+         ========================================================= -->
+    <section class="gallery section" id="gallery">
+      <div class="container">
+        <p class="label" data-i18n="gallery.label"></p>
+        <h2 class="title" data-i18n="gallery.title"></h2>
+        <div class="gallery__grid" id="gallery-list"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         7. ОТЗЫВЫ (карточки создаёт JS из массива REVIEWS)
+         ========================================================= -->
+    <section class="reviews section" id="reviews">
+      <div class="container">
+        <p class="label" data-i18n="reviews.label"></p>
+        <h2 class="title" data-i18n="reviews.title"></h2>
+        <!-- Отзывы и рейтинг — из data/site.js (SITE.reviews, SITE.rating).
+             Пока есть отзывы-примеры (isExample: true), видна пометка ниже -->
+        <p class="reviews__rating">
+          <span class="stars" aria-hidden="true">★★★★★</span>
+          <strong id="rating-value"></strong>
+          <span id="rating-text"></span>
+        </p>
+        <div class="reviews__grid" id="reviews-list"></div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         8. INSTAGRAM
+         ========================================================= -->
+    <section class="insta section" id="instagram">
+      <div class="container">
+        <p class="label">Instagram</p>
+        <h2 class="title" data-i18n="insta.title"></h2>
+        <p data-i18n="insta.text"></p>
+        <div class="insta__grid">
+          <img src="images/insta-1.jpg" alt="" width="600" height="600" loading="lazy">
+          <img src="images/insta-2.jpg" alt="" width="600" height="600" loading="lazy">
+          <img src="images/insta-3.jpg" alt="" width="600" height="600" loading="lazy">
+          <img src="images/insta-4.jpg" alt="" width="600" height="600" loading="lazy">
+        </div>
+        <a class="btn btn--dark" data-href="instagram" data-config="instagramHandle"></a>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         9. КОНТАКТЫ: адрес, часы, телефон, WhatsApp, карта
+         ========================================================= -->
+    <section class="contacts section" id="contacts">
+      <div class="container contacts__grid">
+        <div class="contacts__info">
+          <p class="label" data-i18n="contacts.label"></p>
+          <h2 class="title" data-i18n="contacts.title"></h2>
+
+          <dl class="contacts__list">
+            <dt data-i18n="contacts.address"></dt>
+            <dd><a data-href="maps" data-config="address"></a></dd>
+
+            <dt data-i18n="contacts.hours"></dt>
+            <!-- Строки часов работы создаёт JS из CONFIG.hours -->
+            <dd><ul class="hours" id="hours-list"></ul></dd>
+
+            <dt data-i18n="contacts.phone"></dt>
+            <dd><a data-href="tel" data-config="phone"></a></dd>
+          </dl>
+
+          <div class="contacts__actions">
+            <a class="btn btn--dark" data-href="booking" data-i18n="common.book"></a>
+            <a class="btn btn--outline" data-href="whatsapp"><span data-i18n="contacts.whatsapp"></span></a>
+          </div>
+        </div>
+
+        <!-- Карта. Сначала картинка, настоящая карта Google грузится только по клику -->
+        <div class="map" id="map">
+          <img src="images/map.svg" alt="" width="1200" height="800" loading="lazy">
+          <div class="map__overlay">
+            <button type="button" class="btn btn--dark" id="map-load" data-i18n="contacts.mapShow"></button>
+            <p class="map__note" data-i18n="contacts.mapNote"></p>
+            <a class="map__link" data-href="maps" data-i18n="contacts.mapOpen"></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       10. ПОДВАЛ
+       ========================================================= -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>
+        <p class="footer__logo" data-config="name"></p>
+        <p data-i18n="footer.tagline"></p>
+      </div>
+      <div class="footer__links">
+        <a data-href="booking" data-i18n="common.book"></a>
+        <a data-href="instagram">Instagram</a>
+        <a data-href="whatsapp">WhatsApp</a>
+      </div>
+      <p class="footer__copy">© <span id="year"></span> <span data-config="name"></span></p>
+    </div>
+  </footer>
+
+</body>
+</html>

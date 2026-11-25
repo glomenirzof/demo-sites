@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- DEMO-страница: просим поисковики её не показывать -->
+  <meta name="robots" content="noindex">
+  <!-- Заголовок вкладки и описание. shop.js заменит их на нужный язык -->
+  <title>CRAZY BULL, kosmētika barbershopā</title>
+  <meta name="description" content="CRAZY BULL kosmētika barbershopā, Rīga.">
+
+  <!-- Шрифты — те же, что на главной -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600&family=Oswald:wght@500;700&display=swap">
+
+  <!-- Общие стили сайта + стили только этой страницы -->
+  <link rel="stylesheet" href="style.css?v=34">
+  <link rel="stylesheet" href="booking.css?v=25">
+  <link rel="stylesheet" href="shop.css?v=25">
+
+  <!-- Порядок важен: сначала товары, потом общий скрипт (тексты, языки, меню), потом магазин -->
+  <script src="data/shop.js?v=23" defer></script>
+  <script src="data/site.js?v=26" defer></script>
+  <script src="script.js?v=40" defer></script>
+  <script src="booking.js?v=27" defer></script>
+  <script src="shop.js?v=25" defer></script>
+  <!-- Браузер (Chrome, Edge) заранее готовит страницу сайта, на ссылку которой
+       навели курсор или нажали, — переход почти мгновенный. Другие браузеры это пропускают -->
+  <script type="speculationrules">
+    { "prerender": [{ "where": { "href_matches": "/*" }, "eagerness": "moderate" }] }
+  </script>
+</head>
+<body class="sp">
+
+  <!-- =========================================================
+       ШАПКА: та же, что на главной. Ссылки ведут на разделы главной,
+       справа добавлена иконка корзины
+       ========================================================= -->
+  <header class="header">
+    <div class="header__inner container">
+      <a href="index.html" class="logo" data-config="shortName">DONT TELL MOM</a>
+
+      <nav class="nav" id="nav" aria-label="Menu">
+        <a href="index.html#about" data-i18n="nav.about"></a>
+        <a href="index.html#services" data-i18n="nav.services"></a>
+        <a href="index.html#team" data-i18n="nav.team"></a>
+        <a href="index.html#gallery" data-i18n="nav.gallery"></a>
+        <a href="shop.html" aria-current="page" data-i18n="nav.shop"></a>
+        <a href="index.html#contacts" data-i18n="nav.contacts"></a>
+        <a class="btn btn--dark nav__book" data-href="booking" data-i18n="common.book"></a>
+      </nav>
+
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" class="lang__btn" data-lang="lv">LV</button>
+        <button type="button" class="lang__btn" data-lang="ru">RU</button>
+        <button type="button" class="lang__btn" data-lang="en">EN</button>
+      </div>
+
+      <!-- Корзина: число товаров ставит shop.js -->
+      <button type="button" class="sp-cart-btn" data-cart-open aria-controls="sp-cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 8h14l-1.2 12H6.2L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        <span class="sp-cart-btn__count" data-cart-count>0</span>
+      </button>
+
+      <a class="btn btn--dark header__book" data-href="booking" data-i18n="common.book"></a>
+
+      <button type="button" class="burger" id="burger" aria-controls="nav" aria-expanded="false" data-i18n-aria="nav.open">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+
+  <main id="top">
+
+    <!-- =========================================================
+         1. ПЕРВЫЙ ЭКРАН: фото салона, название бренда, кнопка к товарам
+         ========================================================= -->
+    <section class="hero sp-hero">
+      <div class="hero__media">
+        <!-- Временное фото салона (то же, что в «О нас»). Заменить на фото полки с косметикой -->
+        <img src="images/about.jpg" alt="" width="1200" height="1600" fetchpriority="high" data-i18n-alt="shop.hero.photoAlt">
+      </div>
+
+      <div class="hero__content container">
+        <a class="sp-back" href="index.html" data-i18n="shop.back"></a>
+        <p class="hero__eyebrow" data-i18n="shop.hero.eyebrow"></p>
+        <h1 class="hero__title" translate="no" data-shop="brand">CRAZY BULL</h1>
+        <p class="hero__text" data-i18n="shop.hero.text"></p>
+        <div class="hero__actions">
+          <a class="btn btn--light" href="#products" data-i18n="shop.hero.cta"></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         2. ТОВАРЫ. Карточки строит shop.js из data/shop.js
+         ========================================================= -->
+    <section class="section" id="products">
+      <div class="container">
+        <p class="label" data-i18n="shop.products.label"></p>
+        <h2 class="title" data-i18n="shop.products.title"></h2>
+        <ul class="sp-products" id="sp-products"></ul>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         3. КАК ЭТО РАБОТАЕТ — как «Принципы» на главной
+         ========================================================= -->
+    <section class="principles section sp-how">
+      <div class="container">
+        <p class="label" data-i18n="shop.how.label"></p>
+        <h2 class="title" data-i18n="shop.how.title"></h2>
+        <div class="principles__grid">
+          <article class="card">
+            <span class="card__num">01</span>
+            <h3 data-i18n="shop.how.s1title"></h3>
+            <p data-i18n="shop.how.s1text"></p>
+          </article>
+          <article class="card">
+            <span class="card__num">02</span>
+            <h3 data-i18n="shop.how.s2title"></h3>
+            <p data-i18n="shop.how.s2text"></p>
+          </article>
+          <article class="card">
+            <span class="card__num">03</span>
+            <h3 data-i18n="shop.how.s3title"></h3>
+            <p data-i18n="shop.how.s3text"></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         4. ЗАМЕТКА: помощь с выбором (мягкий переход от тёмного блока)
+         ========================================================= -->
+    <section class="container sp-note">
+      <div class="sp-secure">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 5h14v10H10l-5 4z"/></svg>
+        <p class="sp-tag" data-i18n="shop.help.label"></p>
+        <p data-i18n="shop.help.text"></p>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         5. ПЛИТКИ: запись, мастера, Instagram
+         ========================================================= -->
+    <section class="tiles section" aria-labelledby="sp-tiles-label">
+      <div class="container">
+        <p class="label" id="sp-tiles-label" data-i18n="shop.tiles.label"></p>
+        <div class="tiles__grid">
+          <!-- Запись к мастеру — ссылка из SHOP_SETTINGS.bookingUrl (data/shop.js) -->
+          <a class="tile" data-shop-href="booking">
+            <img src="images/gallery-2.jpg" alt="" width="800" height="800" loading="lazy">
+            <span class="tile__name"><span data-i18n="shop.tiles.book"></span> ↗︎</span>
+          </a>
+          <a class="tile" href="index.html#team">
+            <img src="images/gallery-5.jpg" alt="" width="800" height="800" loading="lazy">
+            <span class="tile__name"><span data-i18n="shop.tiles.team"></span> →</span>
+          </a>
+          <a class="tile" data-shop-href="instagram">
+            <img src="images/insta-1.jpg" alt="" width="600" height="600" loading="lazy">
+            <span class="tile__name"><span data-i18n="shop.tiles.instagram"></span> ↗︎</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       ПОДВАЛ — как на главной
+       ========================================================= -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div>
+        <p class="footer__logo" data-config="name"></p>
+        <p data-i18n="footer.tagline"></p>
+      </div>
+      <div class="footer__links">
+        <a href="index.html" data-i18n="shop.back"></a>
+        <a data-href="booking" data-i18n="common.book"></a>
+        <a data-href="instagram">Instagram</a>
+      </div>
+      <p class="footer__copy">© <span id="year"></span> <span data-config="name"></span></p>
+    </div>
+  </footer>
+
+
+  <!-- =========================================================
+       ПАНЕЛЬ КОРЗИНЫ И ОФОРМЛЕНИЕ ЗАКАЗА (3 шага).
+       DEMO: форма никуда не отправляется, см. shop.js
+       ========================================================= -->
+  <div class="sp-backdrop" data-cart-close></div>
+
+  <aside class="sp-drawer" id="sp-cart" role="dialog" aria-modal="true" aria-labelledby="sp-cart-title" aria-hidden="true">
+    <div class="sp-drawer__top">
+      <!-- Текст заголовка ставит shop.js: «Корзина» или «Заказ» -->
+      <h2 class="sp-drawer__title" id="sp-cart-title"></h2>
+      <button type="button" class="sp-close" id="sp-cart-close" data-cart-close>
+        <span aria-hidden="true">✕</span> <span data-i18n="shop.cart.close"></span>
+      </button>
+    </div>
+
+    <ol class="sp-steps" data-i18n-aria="shop.steps.label">
+      <li data-step-ind="1"><span class="sp-steps__num">01</span><span data-i18n="shop.steps.s1"></span></li>
+      <li data-step-ind="2"><span class="sp-steps__num">02</span><span data-i18n="shop.steps.s2"></span></li>
+      <li data-step-ind="3"><span class="sp-steps__num">03</span><span data-i18n="shop.steps.s3"></span></li>
+    </ol>
+
+    <div class="sp-drawer__body" id="sp-drawer-body">
+
+      <!-- Шаг 1. Корзина -->
+      <div class="sp-step" data-step="1">
+        <div class="sp-empty" id="sp-cart-empty">
+          <p data-i18n="shop.cart.empty"></p>
+          <a class="btn btn--outline" href="#products" data-cart-close data-i18n="shop.cart.emptyCta"></a>
+        </div>
+        <div id="sp-cart-filled">
+          <ul class="sp-cart-list" id="sp-cart-list"></ul>
+          <dl class="sp-sum" id="sp-sum-1"></dl>
+          <div class="sp-actions">
+            <button type="button" class="btn btn--dark" data-go="2" data-i18n="shop.cart.checkout"></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Шаг 2. Способ получения и контакты.
+           novalidate: поля проверяет shop.js и пишет сообщения под полями на языке сайта.
+           autocomplete="off" — браузер не запоминает введённое -->
+      <form class="sp-step" data-step="2" id="sp-delivery" autocomplete="off" novalidate hidden>
+
+        <!-- Варианты строит shop.js из списка SHOP_DELIVERY (data/shop.js) -->
+        <fieldset class="sp-options">
+          <legend class="sp-tag sp-step__label" data-i18n="shop.delivery.label"></legend>
+          <div class="sp-options__list" id="sp-options-list"></div>
+        </fieldset>
+
+        <!-- Самовывоз: имя и телефон. Доставка: ещё email и пункт выдачи / адрес -->
+        <div class="sp-fields">
+          <p class="sp-tag sp-step__label" data-i18n="shop.delivery.contacts"></p>
+          <p class="sp-form-error" id="sp-form-error" role="alert" data-i18n="shop.errors.summary" hidden></p>
+          <div class="sp-field">
+            <label class="sp-tag" for="sp-name" data-i18n="shop.delivery.name"></label>
+            <input type="text" id="sp-name" aria-describedby="sp-name-error" maxlength="60">
+            <p class="sp-field__error" id="sp-name-error"></p>
+          </div>
+          <div class="sp-field">
+            <label class="sp-tag" for="sp-phone" data-i18n="shop.delivery.phone"></label>
+            <input type="tel" id="sp-phone" aria-describedby="sp-phone-error" inputmode="tel" maxlength="20" placeholder="+371">
+            <p class="sp-field__error" id="sp-phone-error"></p>
+          </div>
+          <div class="sp-field">
+            <label class="sp-tag" for="sp-email" data-i18n="shop.delivery.email"></label>
+            <input type="email" id="sp-email" aria-describedby="sp-email-error" maxlength="80">
+            <p class="sp-field__error" id="sp-email-error"></p>
+          </div>
+          <div class="sp-field">
+            <!-- Подпись своя у каждой службы (field в data/shop.js) -->
+            <label class="sp-tag" for="sp-point" id="sp-point-label"></label>
+            <input type="text" id="sp-point" aria-describedby="sp-point-error" maxlength="100">
+            <p class="sp-field__error" id="sp-point-error"></p>
+          </div>
+        </div>
+
+        <dl class="sp-sum" id="sp-sum-2"></dl>
+        <div class="sp-actions">
+          <button type="button" class="btn btn--outline" data-go="1" data-i18n="shop.steps.back"></button>
+          <button type="submit" class="btn btn--dark" data-i18n="shop.steps.next"></button>
+        </div>
+      </form>
+
+      <!-- Шаг 3. Самовывоз — оплата на месте и «Забронировать (демо)».
+           Доставка — экран выбора оплаты (заглушка) и «Оплатить (демо)».
+           Какой блок показать, решает shop.js по атрибуту data-pay -->
+      <div class="sp-step" data-step="3" hidden>
+        <div data-pay="pickup">
+          <p class="sp-tag sp-step__label" data-i18n="shop.payment.onSiteLabel"></p>
+          <!-- Текст с адресом барбершопа ставит shop.js -->
+          <p class="sp-pay-text" id="sp-onsite-text"></p>
+          <p class="sp-pay-hint" data-i18n="shop.payment.onSiteHow"></p>
+        </div>
+
+        <div data-pay="delivery">
+          <p class="sp-tag sp-step__label" data-i18n="shop.payment.label"></p>
+          <p class="sp-pay-text" data-i18n="shop.payment.text"></p>
+          <ul class="sp-methods">
+            <li data-i18n="shop.payment.card"></li>
+            <li data-i18n="shop.payment.wallet"></li>
+            <li data-i18n="shop.payment.bank"></li>
+          </ul>
+        </div>
+
+        <dl class="sp-sum" id="sp-sum-3"></dl>
+
+        <div class="sp-secure" data-pay="delivery">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="1"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>
+          <p class="sp-tag" data-i18n="shop.secure.label"></p>
+          <p data-i18n="shop.secure.text"></p>
+        </div>
+
+        <div class="sp-actions">
+          <button type="button" class="btn btn--outline" data-go="2" data-i18n="shop.steps.back"></button>
+          <button type="button" class="btn btn--dark" id="sp-reserve" data-pay="pickup" data-i18n="shop.payment.reserve"></button>
+          <button type="button" class="btn btn--dark" id="sp-pay" data-pay="delivery" data-i18n="shop.payment.pay"></button>
+        </div>
+      </div>
+
+      <!-- Спасибо -->
+      <div class="sp-step" data-step="done" hidden>
+        <h3 class="sp-done__title" data-i18n="shop.done.title"></h3>
+        <p class="sp-done__order"><span data-i18n="shop.done.order"></span> <strong id="sp-order-no"></strong></p>
+        <p class="sp-tag sp-step__label" data-i18n="shop.done.next"></p>
+        <ol class="sp-next" id="sp-next"></ol>
+        <button type="button" class="btn btn--dark" data-cart-close data-i18n="shop.done.back"></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Сообщения для экранных читалок («Добавлено в корзину») -->
+  <p class="sp-sr" id="sp-live" aria-live="polite"></p>
+
+</body>
+</html>

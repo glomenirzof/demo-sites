@@ -1,0 +1,907 @@
+/* =============================================================
+   shop.css — стили только для shop.html (DEMO-страница магазина)
+   Подключается после style.css и берёт оттуда цвета, шрифты и отступы
+   (переменные из :root). Все классы начинаются с sp- (shop page),
+   чтобы не задеть главную страницу.
+
+   Часть 1 — общая для всех версий сайта (корзина, шаги, форма).
+   Часть 2 (в конце файла) — то, что повторяет стиль этой версии.
+   ============================================================= */
+
+
+/* =============================================================
+   ЧАСТЬ 1. ОБЩЕЕ
+   ============================================================= */
+
+/* Текст только для экранных читалок (на экране не виден) */
+.sp-sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Мелкая заглавная подпись */
+.sp-tag {
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Тихая пометка DEMO внизу страницы */
+.sp-demo {
+  padding-block: 0 56px;
+  color: var(--muted);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+/* Ссылка «← На главную» */
+.sp-back {
+  display: inline-block;
+  padding-block: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+}
+
+.sp-back:hover {
+  text-decoration-thickness: 2px;
+}
+
+
+/* ---------- Иконка корзины в шапке со счётчиком ---------- */
+.sp-cart-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.sp-cart-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.sp-cart-btn__count {
+  position: absolute;
+  top: 3px;
+  right: 0;
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--dark);
+  color: var(--light);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 19px;
+  text-align: center;
+}
+
+/* Счётчик «подпрыгивает», когда товар добавлен */
+@keyframes sp-bump {
+  40% { transform: scale(1.35); }
+}
+
+.sp-cart-btn__count.is-bump {
+  animation: sp-bump 0.4s var(--ease);
+}
+
+
+/* ---------- Карточка товара (общая основа) ---------- */
+.sp-products {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+}
+
+.sp-product {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Обёртка фото обрезает его, когда оно чуть приближается при наведении */
+.sp-product__media {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface);
+  margin-bottom: 14px;
+}
+
+.sp-product__photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+
+.sp-product:hover .sp-product__photo {
+  transform: scale(1.03);
+}
+
+.sp-product__price {
+  font-family: var(--font-head);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* «В корзине ✓»: подчёркнутая ссылка на секунду бледнеет */
+.sp-product__buy.is-added {
+  opacity: 0.55;
+}
+
+
+/* ---------- Заметка о безопасной оплате ---------- */
+.sp-secure {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 4px 14px;
+  align-items: start;
+}
+
+.sp-secure svg {
+  width: 22px;
+  height: 22px;
+  margin-top: 1px;
+}
+
+.sp-secure .sp-tag {
+  color: var(--muted);
+}
+
+.sp-secure p:last-child {
+  grid-column: 2;
+  max-width: 60ch;
+}
+
+.sp-note {
+  padding-block: 40px;
+  border-top: 1px solid var(--line);
+}
+
+
+/* =============================================================
+   ПАНЕЛЬ КОРЗИНЫ И ОФОРМЛЕНИЕ ЗАКАЗА
+   На телефоне — весь экран, на компьютере — панель справа.
+   В закрытом виде уехала вправо; visibility: hidden убирает её
+   и от клика, и от клавиши Tab.
+   ============================================================= */
+.sp-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  background: rgba(26, 25, 23, 0.45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s var(--ease), visibility 0s linear 0.4s;
+}
+
+.sp-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--text);
+  transform: translateX(100%);
+  visibility: hidden;
+  transition: transform 0.45s var(--ease), visibility 0s linear 0.45s;
+}
+
+/* Панель открыта: класс sp-cart-open ставит shop.js на <body> */
+body.sp-cart-open {
+  overflow: hidden;
+}
+
+body.sp-cart-open .sp-backdrop,
+body.sp-cart-open .sp-drawer {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition-delay: 0s;
+}
+
+.sp-drawer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 64px;
+  padding: 0 var(--gutter);
+  border-bottom: 1px solid var(--line);
+}
+
+.sp-drawer__title {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sp-close {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.sp-close:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Индикатор шагов: 01 Корзина · 02 Доставка · 03 Оплата */
+.sp-steps {
+  list-style: none;
+  margin: 0;
+  padding: 14px var(--gutter) 16px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sp-steps li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-top: 10px;
+  border-top: 2px solid var(--line);
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: border-color 0.3s var(--ease), color 0.3s var(--ease);
+}
+
+.sp-steps li.is-active,
+.sp-steps li.is-done {
+  border-color: var(--dark);
+  color: var(--text);
+}
+
+.sp-steps li.is-done .sp-steps__num::after {
+  content: " ✓";
+}
+
+.sp-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 24px var(--gutter) 40px;
+}
+
+/* Подпись над шагом («КАК ПОЛУЧИТЬ», «ОПЛАТА») */
+.sp-step__label {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+
+/* --- Шаг 1: строки корзины --- */
+.sp-cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--text);
+}
+
+.sp-item {
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sp-item__photo {
+  width: 64px;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  background: var(--surface);
+}
+
+.sp-item__name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.sp-item__meta {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+/* Количество: − 2 + */
+.sp-qty {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+}
+
+.sp-qty__btn {
+  width: 44px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  cursor: pointer;
+}
+
+.sp-qty__btn:hover {
+  color: var(--muted);
+}
+
+.sp-qty__num {
+  min-width: 20px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.sp-item__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.sp-item__side strong {
+  font-family: var(--font-head);
+  font-size: 1.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.sp-item__remove {
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.sp-item__remove:hover {
+  color: var(--text);
+}
+
+.sp-empty p {
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+/* Итоги: Товары / Доставка / Итого */
+.sp-sum {
+  margin: 20px 0 24px;
+}
+
+.sp-sum div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+  color: var(--muted);
+}
+
+.sp-sum dd {
+  margin: 0;
+  color: var(--text);
+}
+
+.sp-sum .sp-sum__total {
+  margin-top: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--text);
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+/* Кнопки шага: «Назад» и «Далее» */
+.sp-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sp-actions .btn {
+  flex: 1 1 140px;
+}
+
+/* --- Шаг 2: доставка и контакты --- */
+.sp-demo-note {
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--dark);
+  color: var(--light);
+}
+
+.sp-options {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
+}
+
+.sp-options legend {
+  padding: 0;
+}
+
+/* Вариант доставки — вся плашка кликабельна */
+.sp-option {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.sp-option:hover {
+  border-color: var(--muted);
+}
+
+.sp-option:has(input:checked) {
+  border-color: var(--dark);
+  box-shadow: inset 0 0 0 1px var(--dark);
+}
+
+.sp-option input {
+  width: 20px;
+  height: 20px;
+  margin: 1px 0 0;
+  accent-color: var(--dark);
+}
+
+.sp-option__title {
+  display: block;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.sp-option__note {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.sp-option__price {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sp-field {
+  display: grid;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.sp-field[hidden] {
+  display: none;
+}
+
+.sp-field label {
+  color: var(--muted);
+}
+
+/* font-size 1rem: на iPhone поле не увеличивает страницу при вводе */
+.sp-field input {
+  width: 100%;
+  min-height: 50px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--light);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+}
+
+.sp-field input:hover {
+  border-color: var(--muted);
+}
+
+.sp-field input:focus {
+  outline: 2px solid var(--dark);
+  outline-offset: 0;
+  border-color: var(--dark);
+}
+
+.sp-fields {
+  margin-bottom: 24px;
+}
+
+/* --- Шаг 3: оплата --- */
+.sp-pay-text {
+  margin-bottom: 16px;
+}
+
+/* Варианты оплаты — только показ, выбирать их будет платёжная система */
+.sp-methods {
+  list-style: none;
+  display: grid;
+  gap: 8px;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+.sp-methods li {
+  padding: 14px 16px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius);
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.sp-drawer .sp-secure {
+  margin-bottom: 24px;
+  font-size: 0.9rem;
+}
+
+/* --- Спасибо --- */
+.sp-done__title {
+  font-family: var(--font-head);
+  font-size: clamp(2rem, 8vw, 2.6rem);
+  font-weight: 700;
+  line-height: 1.15;
+  text-transform: uppercase;
+  text-wrap: balance;
+  margin: 10px 0 12px;
+}
+
+.sp-done__order {
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+.sp-done__order strong {
+  color: var(--text);
+}
+
+.sp-next {
+  list-style: none;
+  margin: 10px 0 28px;
+  padding: 0;
+  border-top: 1px solid var(--text);
+}
+
+.sp-next li {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.sp-next__num {
+  padding-top: 3px;
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
+/* =============================================================
+   ОФОРМЛЕНИЕ: способы получения, ошибки в полях, оплата на месте
+   ============================================================= */
+
+/* Скрытые блоки панели (поля, кнопки, экраны шага 3) прячем всегда,
+   даже если у них свой display в стилях выше */
+.sp-drawer [hidden] {
+  display: none !important;
+}
+
+.sp-options__list {
+  display: grid;
+  gap: 10px;
+}
+
+.sp-option {
+  grid-template-columns: 22px 1fr;
+}
+
+/* Общее сообщение над полями: «Проверьте отмеченные поля» */
+.sp-form-error {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--dark);
+  background: var(--surface);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Поле с ошибкой: рамка темнее и толще, текст ошибки под полем */
+.sp-field.is-invalid input {
+  border-color: var(--dark);
+  box-shadow: inset 0 0 0 1px var(--dark);
+  background: var(--surface);
+}
+
+.sp-field__error {
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.sp-field__error:empty {
+  display: none;
+}
+
+.sp-field__error::before {
+  content: "✕ ";
+}
+
+/* Строка «Стоимость доставки уточняется (демо)» */
+.sp-sum .sp-sum__note dd {
+  color: var(--muted);
+  font-style: italic;
+  text-align: right;
+}
+
+.sp-pay-hint {
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+@media (min-width: 768px) {
+  .sp-drawer__top,
+  .sp-steps {
+    padding-inline: 32px;
+  }
+
+  .sp-drawer__body {
+    padding: 28px 32px 48px;
+  }
+}
+
+
+/* =============================================================
+   ЧАСТЬ 2. В СТИЛЕ ЭТОЙ ВЕРСИИ (v1 — спокойная)
+   ============================================================= */
+
+/* Шапка: на узком телефоне добавилась корзина — чуть сжимаем промежутки */
+.sp .header__inner {
+  gap: 6px;
+}
+
+.sp .lang__btn {
+  min-width: 32px;
+}
+
+/* Логотип в одну строку: на телефоне рядом ещё корзина и меню */
+.sp .logo {
+  white-space: nowrap;
+}
+
+/* Пункт меню текущей страницы подчёркнут */
+.sp .nav a[aria-current="page"] {
+  border-bottom-color: currentColor;
+}
+
+/* Верх страницы: ссылка назад, подпись, название бренда, одна строка */
+.sp-shop {
+  padding-top: calc(var(--header-h) + 32px);
+}
+
+.sp-shop .sp-back {
+  margin-bottom: 20px;
+}
+
+.sp-shop__title {
+  margin-bottom: 12px;
+}
+
+.sp-shop__lead {
+  max-width: 44ch;
+  margin: 0 0 clamp(36px, 6vw, 64px);
+  color: var(--muted);
+}
+
+/* Товары: на телефоне по одному, шире — по два, на компьютере — по три */
+.sp-products {
+  grid-template-columns: 1fr;
+  gap: 48px 24px;
+}
+
+.sp-product__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.sp-product__name {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 500;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.sp-product__volume {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+}
+
+.sp-product__desc {
+  margin-bottom: 18px;
+}
+
+.sp-product__buy {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 10px 0 6px;
+  border: 0;
+  border-bottom: 2px solid currentColor;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+/* Видимая ссылка маленькая, а область нажатия — не меньше 44px */
+.sp-product__buy {
+  position: relative;
+}
+
+.sp-product__buy::after {
+  content: "";
+  position: absolute;
+  inset: -8px -14px;
+}
+
+.sp-product__buy:hover {
+  opacity: 0.6;
+}
+
+.sp-product__buy:focus-visible {
+  outline: 2px solid var(--text);
+  outline-offset: 4px;
+}
+
+/* Плитки внизу — в духе v1: фото и подпись крупным узким шрифтом */
+.tiles {
+  padding-top: 0;
+}
+
+.tiles__grid {
+  display: grid;
+  gap: 32px;
+}
+
+.tile {
+  display: block;
+  text-decoration: none;
+}
+
+.tile img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--surface);
+  margin-bottom: 14px;
+  transition: opacity 0.3s var(--ease);
+}
+
+.tile:hover img {
+  opacity: 0.85;
+}
+
+.tile__name {
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  border-bottom: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.tile:hover .tile__name {
+  border-bottom-color: currentColor;
+}
+
+/* На телефоне карточки по одной — фото пониже, чтобы список не был бесконечным */
+@media (max-width: 479px) {
+  .sp-product__photo {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (min-width: 480px) {
+  .sp-products {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .sp .header__inner {
+    gap: 12px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sp-note {
+    padding-block: 56px;
+  }
+
+  .tiles__grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .sp .header__inner {
+    gap: 20px;
+  }
+
+  .sp-products {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 64px 32px;
+  }
+}

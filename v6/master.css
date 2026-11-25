@@ -1,0 +1,456 @@
+/* =============================================================
+   master.css — стили страниц мастеров (<slug>/index.html, создаёт tools/generate.js).
+   Основа — страница /daniels/ (barber.css)
+   Подключается после style.css и берёт оттуда цвета, шрифты и отступы
+   (переменные из :root). Все классы начинаются с bp- (barber page),
+   чтобы не задеть главную страницу.
+   ============================================================= */
+
+/* Серая заглушка под фото: портрет и плитки работ */
+.bp-ph {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  background: var(--surface);
+  border: 1px dashed var(--line);
+  overflow: hidden;
+}
+
+.bp-ph__note {
+  padding: 12px 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Пометка «пример текста» / «пример, цены уточнить» */
+.bp-sample {
+  display: inline-block;
+  margin-bottom: 20px;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.bp-note {
+  color: var(--muted);
+  margin: -16px 0 24px;
+}
+
+
+/* ---------- 1. Первый экран ---------- */
+.bp-hero {
+  padding-block: 32px var(--section-space);
+}
+
+.bp-hero__grid {
+  display: grid;
+  gap: 32px;
+}
+
+/* На телефоне портрет пониже, чтобы имя и кнопка были видны сразу.
+   Фото (если мастер его дал) или крупные инициалы */
+.bp-hero__photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: 50% 30%;
+  border-radius: var(--radius);
+}
+
+.bp-initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(5rem, 30vw, 12rem);
+  line-height: 1;
+  user-select: none;
+}
+
+
+.bp-back {
+  display: inline-block;
+  margin-bottom: 24px;
+  padding-block: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+}
+
+.bp-back:hover {
+  color: var(--text);
+}
+
+.bp-hero__name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(3.5rem, 18vw, 9rem);
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-bottom: 16px;
+  overflow-wrap: anywhere;
+}
+
+.bp-hero__role {
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  line-height: 1.2;
+  color: var(--muted);
+  margin-bottom: 32px;
+}
+
+
+/* ---------- 2. О мастере ---------- */
+.bp-about {
+  display: grid;
+  gap: 8px;
+}
+
+.bp-about__text p:not(.bp-sample) {
+  font-size: 1.1rem;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+
+/* ---------- 3. Специализации ---------- */
+.bp-skills {
+  background: var(--surface);
+}
+
+.bp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.bp-tags li {
+  padding: 10px 22px;
+  border: 2px solid var(--dark);
+  border-radius: 999px;
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+
+/* ---------- 4. Стрижки и цены ----------
+   Карточки — те же, что на главной v4 (.service-card в style.css).
+   На телефоне 2 в ряд, от планшета 3 в ряд: 6 стрижек встают ровно 3×2 */
+.bp-group {
+  margin: 32px 0 14px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* «Ещё работы в Instagram ↗︎» под сеткой */
+.bp-more {
+  display: inline-block;
+  margin-top: 24px;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
+  transition: opacity 0.2s;
+}
+
+.bp-more:hover {
+  opacity: 0.6;
+}
+
+
+
+
+/* Место внизу страницы под панелью записи, чтобы она не закрывала подвал */
+body.bp {
+  padding-bottom: calc(70px + env(safe-area-inset-bottom));
+}
+
+/* ---------- 7. Панель записи внизу экрана (телефон) ----------
+   Сначала спрятана под краем экрана. barber.js добавляет класс is-visible,
+   когда кнопка на первом экране ушла из виду */
+.bp-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  /* Спрятана: опущена за край экрана и прозрачна.
+     Уходит плавно: сначала медленно трогается, потом уезжает вниз,
+     а прозрачность гаснет вместе с движением (не раньше него) */
+  transform: translateY(110%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              opacity 0.7s cubic-bezier(0.65, 0, 0.35, 1),
+              visibility 0s linear 0.7s;
+}
+
+/* Появляется: выезжает снизу и проявляется */
+.bp-bar.is-visible {
+  transform: none;
+  opacity: 1;
+  visibility: visible;
+  transition: transform 0.6s var(--ease), opacity 0.5s ease-out, visibility 0s;
+}
+
+/* Слева: имя и барбершоп — понятно, к кому запись */
+.bp-bar__info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.bp-bar__info strong {
+  font-family: var(--font-head);
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.bp-bar__info span {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Справа: кнопка под большой палец */
+.bp-bar__book {
+  flex-shrink: 0;
+  min-height: 48px;
+  padding: 0 18px;
+}
+
+
+/* ---------- Планшет и компьютер ---------- */
+@media (min-width: 768px) {
+  .bp-hero {
+    padding-top: 56px;
+  }
+
+  .bp-hero__grid {
+    grid-template-columns: 5fr 7fr;
+    align-items: end;
+    gap: 56px;
+  }
+
+  .bp-hero__photo {
+    aspect-ratio: 4 / 5;
+  }
+
+  .bp-about {
+    grid-template-columns: 5fr 7fr;
+    gap: 56px;
+  }
+
+  /* На широком экране кнопка записи уже есть в шапке */
+  .bp-bar {
+    display: none;
+  }
+
+  body.bp {
+    padding-bottom: 0;
+  }
+}
+
+
+
+
+
+/* ---------- Работы: 6 фото-примеров, как в barber.html v4 ---------- */
+.bp-works {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.bp-work {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border-radius: var(--radius);
+  background: var(--surface);   /* серый фон, пока фото грузится */
+}
+
+@media (min-width: 768px) {
+  .bp-works {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+}
+
+
+/* ---------- Строки услуг (как в barber.html v4) ----------
+   На телефоне в две строки:
+   [номер] [название ........ цена]
+   [     ] [время ........ записаться] */
+.bp-services .services__list {
+  display: block;
+  border-top: 1px solid var(--text);
+}
+
+.service {
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  grid-template-areas:
+    "num name  price"
+    "num time  book";
+  column-gap: 12px;
+  row-gap: 6px;
+  align-items: baseline;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.service__num   { grid-area: num; font-size: 0.85rem; color: var(--muted); }
+.service__name  { grid-area: name; font-weight: 600; font-size: 1.1rem; text-transform: uppercase; line-height: 1.3; }
+.service__time  { grid-area: time; color: var(--muted); font-size: 0.95rem; }
+.service__price { grid-area: price; justify-self: end; text-align: right; font-family: var(--font-head); font-size: 1.5rem; font-weight: 500; }
+
+.service__price .price-tag {
+  display: block;
+  margin-top: 2px;
+}
+
+.service__book {
+  grid-area: book;
+  justify-self: end;
+  min-height: 44px;
+  padding: 8px 0;
+  border: 0;
+  border-bottom: 2px solid currentColor;
+  background: none;
+  color: inherit;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.service__book:hover {
+  opacity: 0.6;
+}
+
+/* Планшет и компьютер: номер | название | время | цена | записаться */
+@media (min-width: 768px) {
+  .service {
+    grid-template-columns: 48px 2fr 1fr 1fr auto;
+    grid-template-areas: "num name time price book";
+    align-items: center;
+    padding: 22px 0;
+  }
+
+  .service__price {
+    justify-self: start;
+    text-align: left;
+  }
+
+  .service__price .price-tag {
+    display: inline-block;
+    margin: 0 0 0 6px;
+  }
+}
+
+@media (min-width: 1100px) {
+  .service__name {
+    font-size: 1.25rem;
+  }
+}
+
+
+/* ---------- Услуги мастера: две группы ----------
+   Стрижки — карточки с фото (карточка — как на главной, .service-card в style.css):
+   2 в ряд на телефоне и планшете, 3 на компьютере.
+   Борода и комбо — строки (.service выше) */
+.bp-group-block + .bp-group-block {
+  margin-top: 56px;
+}
+
+.bp-group-block .bp-group {
+  margin-top: 0;
+}
+
+.bp-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Строки стрижек без своего фото — под карточками */
+.bp-cards + .services__list {
+  margin-top: 32px;
+}
+
+/* Подпись «Пример, сгенерировано ИИ» внизу фото */
+.service-card__media {
+  position: relative;
+}
+
+.bp-ai {
+  position: absolute;
+  left: 8px;
+  bottom: 8px;
+  max-width: calc(100% - 16px);
+  padding: 3px 7px;
+  border-radius: var(--radius);
+  background: rgba(26, 25, 23, 0.72);
+  color: var(--light);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+@media (min-width: 1100px) {
+  .bp-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px 24px;
+  }
+}

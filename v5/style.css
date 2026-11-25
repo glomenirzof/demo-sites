@@ -1,0 +1,1414 @@
+/* =============================================================
+   style.css — оформление сайта
+
+   Принцип mobile-first: сначала пишем стили для телефона (375px).
+   Ниже, в блоках @media (min-width: ...), — дополнения для
+   планшета (от 768px) и компьютера (от 1100px).
+   ============================================================= */
+
+
+/* =============================================================
+   1. ПЕРЕМЕННЫЕ — цвета, шрифты, отступы.
+      Поменяли здесь — поменялось на всём сайте.
+   ============================================================= */
+:root {
+  /* Цвета */
+  --bg: #f8f6f2;          /* основной фон — тёплый белый */
+  --surface: #efebe4;     /* фон второстепенных блоков */
+  --text: #1a1917;        /* основной текст — почти чёрный */
+  --muted: #6b665e;       /* серый текст */
+  --line: #d9d3c8;        /* линии и рамки */
+  --dark: #1a1917;        /* тёмные блоки и кнопки */
+  --light: #f8f6f2;       /* светлый текст на тёмном */
+  --star: #c8962e;        /* цвет звёзд в отзывах */
+
+  /* Шрифты */
+  --font-head: "Oswald", "Arial Narrow", sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-hand: "Caveat", cursive;
+
+  /* Отступы. clamp(мин, желаемое, макс) — размер «тянется» вместе с экраном */
+  --gutter: 16px;                                  /* поля по бокам */
+  --section-space: clamp(72px, 12vw, 160px);       /* отступ между блоками */
+  --header-h: 64px;                                /* высота шапки */
+
+  /* Скругление и анимация */
+  --radius: 2px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* =============================================================
+   2. БАЗА — общие правила для всей страницы
+   ============================================================= */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;   /* ширина элемента включает отступы и рамку */
+}
+
+html {
+  scroll-behavior: auto;                        /* при загрузке и обновлении страницы позиция восстанавливается сразу, без прокрутки */
+  scroll-padding-top: var(--header-h);          /* чтобы шапка не закрывала заголовок */
+  -webkit-text-size-adjust: 100%;
+  font-variant-emoji: text;                     /* стрелки ↗ на iPhone остаются обычными символами, а не цветными эмодзи */
+}
+
+/* Плавная прокрутка к якорям включается скриптом после загрузки страницы (см. script.js) */
+html.is-smooth {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+}
+
+h1, h2, h3, p {
+  margin: 0;
+}
+
+/* Видимая рамка при управлении с клавиатуры (Tab) */
+:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 3px;
+}
+
+/* Контейнер: ограничивает ширину контента и даёт поля по бокам */
+.container {
+  width: min(100% - 2 * var(--gutter), 1280px);
+  margin-inline: auto;
+}
+
+/* Общий отступ сверху и снизу для каждого блока */
+.section {
+  padding-block: var(--section-space);
+}
+
+
+/* =============================================================
+   3. ТИПОГРАФИКА — подписи и заголовки разделов
+   ============================================================= */
+
+/* Маленькая рукописная подпись над заголовком («Par mums», «Kontakti») */
+.label {
+  font-family: var(--font-hand);
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* Крупный заголовок раздела */
+.title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 9vw, 5rem);
+  /* 1.12, а не 1: латышские Ā, Ī, Ž иначе касаются строки выше */
+  line-height: 1.12;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  margin-bottom: 32px;
+  text-wrap: balance;          /* ровнее переносит строки */
+}
+
+
+/* =============================================================
+   4. КНОПКИ
+   ============================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 28px;
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.25s var(--ease), color 0.25s var(--ease),
+              border-color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.btn:active {
+  transform: scale(0.98);      /* лёгкое «нажатие» */
+}
+
+/* Тёмная кнопка */
+.btn--dark {
+  background: var(--dark);
+  color: var(--light);
+  border-color: var(--dark);
+}
+.btn--dark:hover {
+  background: transparent;
+  color: var(--dark);
+}
+
+/* Светлая кнопка (на тёмном фоне первого экрана) */
+.btn--light {
+  background: var(--light);
+  color: var(--dark);
+  border-color: var(--light);
+}
+.btn--light:hover {
+  background: transparent;
+  color: var(--light);
+}
+
+/* Прозрачная кнопка с белой рамкой (на тёмном фоне) */
+.btn--ghost {
+  background: transparent;
+  color: var(--light);
+  border-color: rgba(248, 246, 242, 0.5);
+}
+.btn--ghost:hover {
+  border-color: var(--light);
+}
+
+/* Прозрачная кнопка с тёмной рамкой (на светлом фоне) */
+.btn--outline {
+  background: transparent;
+  color: var(--dark);
+  border-color: var(--dark);
+}
+.btn--outline:hover {
+  background: var(--dark);
+  color: var(--light);
+}
+
+
+/* =============================================================
+   5. ШАПКА
+   ============================================================= */
+.header {
+  position: sticky;             /* шапка «прилипает» к верху при прокрутке */
+  top: 0;
+  z-index: 50;
+  height: var(--header-h);
+  border-bottom: 1px solid var(--line);
+}
+
+/* Полупрозрачный фон с размытием — отдельным слоем ::before.
+   Важно: если поставить backdrop-filter прямо на .header, то
+   position: fixed у мобильного меню начнёт считаться от шапки,
+   а не от экрана, и меню станет невидимым. */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: rgba(248, 246, 242, 0.92);
+  backdrop-filter: blur(10px);  /* размытие того, что под шапкой */
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.header__inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 1.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  margin-right: auto;           /* отталкивает остальное вправо */
+}
+
+/* --- Меню. На телефоне скрыто и открывается бургером (этап 3) --- */
+.nav {
+  position: fixed;
+  top: var(--header-h);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 24px var(--gutter);
+  background: var(--bg);
+  /* спрятано: уехало вверх и прозрачно */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-12px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease), visibility 0.3s;
+}
+
+/* Пока мобильное меню открыто, страница под ним не прокручивается */
+body.menu-open {
+  overflow: hidden;
+}
+
+.nav.is-open {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.nav a {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Кнопка записи внизу мобильного меню */
+.nav .nav__book {
+  margin-top: 32px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0 28px;
+  border-bottom: 2px solid var(--dark);
+}
+
+/* --- Переключатель языков --- */
+.lang {
+  display: flex;
+}
+
+.lang__btn {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 4px;
+  border: 0;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.lang__btn:hover,
+.lang__btn.is-active {
+  color: var(--text);
+}
+
+.lang__btn.is-active {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* На узком телефоне кнопка записи в шапке не помещается —
+   прячем её (кнопки есть на первом экране и в меню) */
+.header__book {
+  display: none;
+  min-height: 44px;
+  padding: 0 18px;
+}
+
+/* --- Бургер (две линии) --- */
+.burger {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.burger span {
+  width: 26px;
+  height: 2px;
+  background: var(--text);
+  transition: transform 0.3s var(--ease);
+}
+
+/* Когда меню открыто — линии превращаются в крестик */
+.burger[aria-expanded="true"] span:first-child {
+  transform: translateY(4.5px) rotate(45deg);
+}
+.burger[aria-expanded="true"] span:last-child {
+  transform: translateY(-4.5px) rotate(-45deg);
+}
+
+
+/* =============================================================
+   6. ПЕРВЫЙ ЭКРАН
+   ============================================================= */
+.hero {
+  position: relative;
+  min-height: calc(100svh - var(--header-h));   /* весь экран минус шапка */
+  display: flex;
+  align-items: flex-end;                        /* текст прижат к низу */
+  color: var(--light);
+  overflow: hidden;
+}
+
+/* Фото/видео растянуто на весь блок */
+.hero__media,
+.hero__media img,
+.hero__media video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;            /* заполнить без искажений */
+}
+
+/* Затемнение снизу, чтобы белый текст читался на любом фото */
+.hero__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.25) 60%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.hero__content {
+  position: relative;           /* поверх фона */
+  padding-block: 48px;
+}
+
+.hero__eyebrow {
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  line-height: 1;
+  margin-bottom: 16px;
+}
+
+.hero__title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  /* размер зависит и от ширины (vw), и от высоты экрана (svh) —
+     берётся меньшее, чтобы кнопки всегда помещались на первом экране */
+  font-size: clamp(3rem, min(13vw, 13svh), 8.5rem);
+  /* 1.12, а не 1: латышские Ā, Ī, Ž иначе касаются строки выше */
+  line-height: 1.12;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  max-width: 12ch;              /* ~12 символов в строке — крупно и плотно */
+  margin-bottom: 20px;
+}
+
+.hero__text {
+  font-size: 1.1rem;
+  max-width: 34ch;
+  opacity: 0.9;
+  margin-bottom: 32px;
+}
+
+.hero__actions {
+  display: flex;
+  flex-direction: column;       /* на телефоне кнопки друг под другом */
+  gap: 12px;
+}
+
+
+/* =============================================================
+   7. О БАРБЕРШОПЕ
+   ============================================================= */
+.about__grid {
+  display: grid;
+  gap: 40px;
+}
+
+.about__photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.about__text p:not(.label) {
+  color: var(--muted);
+  font-size: 1.1rem;
+  max-width: 56ch;
+}
+
+.about__text p + p {
+  margin-top: 16px;
+}
+
+
+/* =============================================================
+   8. ПРИНЦИПЫ — тёмный блок с карточками
+   ============================================================= */
+.principles {
+  background: var(--dark);
+  color: var(--light);
+}
+
+.principles .label {
+  color: rgba(248, 246, 242, 0.6);
+}
+
+.principles__grid {
+  display: grid;
+  gap: 0;
+  margin-top: 16px;
+}
+
+.card {
+  padding: 28px 0;
+  border-top: 1px solid rgba(248, 246, 242, 0.2);
+}
+
+.card__num {
+  display: block;
+  font-size: 0.85rem;
+  color: rgba(248, 246, 242, 0.5);
+  margin-bottom: 12px;
+}
+
+.card h3 {
+  font-family: var(--font-head);
+  font-size: 1.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1.15;
+  margin-bottom: 10px;
+}
+
+.card p {
+  color: rgba(248, 246, 242, 0.7);
+}
+
+
+/* =============================================================
+   9. УСЛУГИ И ЦЕНЫ
+   ============================================================= */
+.services__note {
+  color: var(--muted);
+  margin: -16px 0 32px;
+}
+
+/* Вкладки категорий */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;              /* если не влезают — переносятся на новую строку */
+  gap: 6px;
+  margin-bottom: 24px;
+}
+
+.tabs__btn {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 2px solid var(--dark);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--dark);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.tabs__btn.is-active,
+.tabs__btn:hover {
+  background: var(--dark);
+  color: var(--light);
+}
+
+/* Услуги — карточки с фото: фото сверху, под ним название,
+   время и цена, ссылка записи. Вся карточка — одна ссылка.
+   На телефоне 2 карточки в ряд, на планшете 3, на компьютере 4 */
+.services__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 36px 12px;
+}
+
+.service-card__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Обёртка фото обрезает его, когда оно чуть приближается при наведении */
+.service-card__media {
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: var(--surface);   /* серый фон, пока фото грузится */
+  margin-bottom: 14px;
+}
+
+.service-card__photo {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease);
+}
+
+.service-card__link:hover .service-card__photo {
+  transform: scale(1.03);
+}
+
+.service-card__name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+/* Время слева, цена справа. Цена — шрифтом заголовков, как в списке v1 */
+.service-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 10px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.service-card__meta strong {
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+/* «Записаться ↗︎» прижато к низу карточки, чтобы в ряду все стояли на одной линии */
+.service-card__book {
+  align-self: flex-start;
+  margin-top: auto;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 6px 0;
+  border-bottom: 2px solid currentColor;
+  transition: opacity 0.2s;
+}
+
+.service-card__link:hover .service-card__book {
+  opacity: 0.6;
+}
+
+
+/* Ссылка на магазин под списком услуг (DEMO) */
+.shop-link {
+  margin-top: 28px;
+}
+
+.shop-link a {
+  display: inline-block;
+  padding: 8px 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
+  transition: opacity 0.2s;
+}
+
+.shop-link a:hover {
+  opacity: 0.6;
+}
+
+
+/* =============================================================
+   10. МАСТЕРА
+   ============================================================= */
+.team {
+  background: var(--surface);
+}
+
+.team__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);   /* 2 в ряд на телефоне */
+  gap: 28px 12px;
+}
+
+.master__photo {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  margin-bottom: 14px;
+  filter: grayscale(1);                    /* чёрно-белое фото, как у m87 */
+  transition: filter 0.5s var(--ease);
+}
+
+.master:hover .master__photo {
+  filter: grayscale(0);                    /* при наведении — цветное */
+}
+
+.master__name {
+  font-family: var(--font-head);
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.master__about {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+/* DEMO: ссылка «Страница мастера →» под карточкой мастера */
+.master__page {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 8px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-bottom: 2px solid currentColor;
+  transition: opacity 0.2s;
+}
+
+.master__page:hover {
+  opacity: 0.6;
+}
+
+
+/* v4-booking: плитка мастера — ссылка на его страницу */
+.master {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.master__name,
+.master__about {
+  display: block;
+}
+
+/* Вместо фото — инициалы (фото мастеров не копируем) */
+.initials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface);
+  color: var(--muted);
+  font-family: var(--font-head);
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+
+.master__photo.initials {
+  font-size: clamp(3rem, 14vw, 5.5rem);
+}
+
+.master:hover .master__page {
+  opacity: 0.6;
+}
+
+
+/* =============================================================
+   11. ГАЛЕРЕЯ
+   ============================================================= */
+.gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.gallery__grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  background: var(--surface);   /* серый фон, пока картинка грузится */
+}
+
+
+/* =============================================================
+   12. ОТЗЫВЫ
+   ============================================================= */
+.reviews__rating {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  margin: -12px 0 32px;
+  color: var(--muted);
+}
+
+.reviews__rating strong {
+  color: var(--text);
+  font-family: var(--font-head);
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.stars {
+  color: var(--star);
+  letter-spacing: 0.1em;
+}
+
+.reviews__grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 28px 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+
+.review__text {
+  font-size: 1.05rem;
+  flex-grow: 1;                 /* имя всегда внизу карточки */
+}
+
+.review__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+
+/* =============================================================
+   13. INSTAGRAM
+   ============================================================= */
+.insta {
+  padding-top: 0;               /* блок идёт сразу за отзывами */
+}
+
+.insta .title {
+  margin-bottom: 16px;
+}
+
+.insta p:not(.label):not(.title) {
+  color: var(--muted);
+  max-width: 48ch;
+}
+
+.insta__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin: 32px 0;
+}
+
+.insta__grid img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+
+/* =============================================================
+   14. КОНТАКТЫ И КАРТА
+   ============================================================= */
+.contacts {
+  border-top: 1px solid var(--line);
+}
+
+.contacts__grid {
+  display: grid;
+  gap: 40px;
+}
+
+/* Список «название — значение» */
+.contacts__list {
+  margin: 0 0 32px;
+}
+
+.contacts__list dt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-top: 24px;
+}
+
+.contacts__list dd {
+  margin: 4px 0 0;
+  font-size: 1.15rem;
+}
+
+.contacts__list dd a {
+  text-decoration-color: var(--line);
+  text-underline-offset: 4px;
+}
+
+.hours {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: 320px;
+}
+
+.hours li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.contacts__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Карта: картинка-заглушка + кнопка поверх */
+.map {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.map img,
+.map iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 0;
+}
+
+.map__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  background: rgba(248, 246, 242, 0.75);
+}
+
+.map__note {
+  font-size: 0.8rem;
+  color: var(--muted);
+  max-width: 30ch;
+}
+
+.map__link {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+
+/* =============================================================
+   15. ПОДВАЛ
+   ============================================================= */
+.footer {
+  background: var(--dark);
+  color: rgba(248, 246, 242, 0.7);
+  padding-block: 56px;
+  font-size: 0.95rem;
+}
+
+.footer__inner {
+  display: grid;
+  gap: 32px;
+}
+
+.footer__logo {
+  font-family: var(--font-head);
+  font-size: 2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--light);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+}
+
+.footer__links a {
+  color: var(--light);
+  text-decoration: none;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+
+.footer__links a:hover {
+  text-decoration: underline;
+}
+
+.footer__copy {
+  font-size: 0.85rem;
+  color: rgba(248, 246, 242, 0.45);
+}
+
+
+/* =============================================================
+   16. ТЕЛЕФОН ПОШИРЕ (от 480px)
+   ============================================================= */
+@media (min-width: 480px) {
+  .header__book {
+    display: inline-flex;      /* кнопка записи в шапке появляется */
+  }
+
+  .hero__actions,
+  .contacts__actions {
+    flex-direction: row;       /* кнопки в ряд */
+    flex-wrap: wrap;
+  }
+}
+
+
+/* =============================================================
+   17. ПЛАНШЕТ (от 768px)
+   ============================================================= */
+@media (min-width: 768px) {
+  :root {
+    --gutter: 32px;
+    --header-h: 76px;
+  }
+
+  .hero__content {
+    padding-block: 72px;
+  }
+
+  .hero__text {
+    font-size: 1.25rem;
+  }
+
+  .hero__title {
+    max-width: 16ch;           /* на широком экране — две строки вместо четырёх */
+  }
+
+  .about__grid {
+    grid-template-columns: 5fr 7fr;   /* фото слева, текст справа */
+    align-items: center;
+    gap: 56px;
+  }
+
+  .principles__grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 40px;
+  }
+
+  /* Карточки услуг: три в ряд */
+  .services__list {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 48px 16px;
+  }
+
+  .tabs__btn {
+    padding: 0 22px;
+  }
+
+  .gallery__grid,
+  .insta__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .reviews__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .contacts__grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 56px;
+  }
+
+  .map {
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 480px;
+  }
+
+  .footer__inner {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+
+  .footer__copy {
+    grid-column: 1 / -1;
+  }
+}
+
+
+/* =============================================================
+   18. КОМПЬЮТЕР (от 1100px)
+   ============================================================= */
+@media (min-width: 1100px) {
+  :root {
+    --header-h: 84px;
+  }
+
+  .header__inner {
+    gap: 20px;
+  }
+
+  .logo {
+    margin-right: 0;
+    white-space: nowrap;       /* название не переносится на 2 строки */
+  }
+
+  /* Меню становится обычной строкой ссылок по центру */
+  .nav {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    gap: clamp(14px, 1.8vw, 32px);   /* расстояние растёт вместе с экраном */
+    flex: 1;
+    padding: 0;
+    background: none;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: none;
+  }
+
+  .nav a {
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+    padding: 6px 0;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .nav a:hover {
+    border-bottom-color: currentColor;
+  }
+
+  .nav .nav__book {
+    display: none;             /* на компьютере кнопка уже есть в шапке */
+  }
+
+  .burger {
+    display: none;             /* бургер на компьютере не нужен */
+  }
+
+  .header__book {
+    min-height: 48px;
+  }
+
+  .principles__grid {
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 32px;
+  }
+
+  .team__grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .reviews__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Карточки услуг: четыре в ряд */
+  .services__list {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 56px 20px;
+  }
+
+  .service-card__name {
+    font-size: 1.05rem;
+  }
+}
+
+
+/* Узкий компьютер (1100–1299px): в меню добавился пункт «Магазин»,
+   поэтому пункты чуть плотнее, чтобы шапка помещалась в одну строку */
+@media (min-width: 1100px) and (max-width: 1299px) {
+  .nav {
+    gap: 14px;
+  }
+
+  .nav a {
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+  }
+
+  .header__book {
+    padding: 0 16px;
+  }
+}
+
+
+/* =============================================================
+   19. АНИМАЦИИ
+   Анимируем только opacity (прозрачность) и transform (сдвиг,
+   масштаб) — браузер делает их видеокартой, поэтому они плавные
+   даже на слабом телефоне.
+   ============================================================= */
+
+/* --- Первый экран: появляется сразу при загрузке --- */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes hero-zoom {
+  from { transform: scale(1.08); }
+  to   { transform: scale(1); }
+}
+
+/* Фон медленно «отъезжает» */
+.hero__media img,
+.hero__media video {
+  animation: hero-zoom 2.4s var(--ease) both;
+}
+
+/* Текст и кнопки выплывают снизу по очереди */
+.hero__content > * {
+  animation: fade-up 1s var(--ease) both;
+}
+.hero__content > :nth-child(2) { animation-delay: 0.1s; }
+.hero__content > :nth-child(3) { animation-delay: 0.2s; }
+.hero__content > :nth-child(4) { animation-delay: 0.3s; }
+
+/* --- Появление при прокрутке ---
+   Классы reveal и reveal-stagger ставит script.js.
+   Когда элемент попадает на экран, скрипт добавляет is-visible. */
+
+/* Одиночный элемент: был прозрачным и чуть ниже → встаёт на место */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Сетка карточек: дети появляются по очереди («лесенкой») */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* Задержка для каждого следующего элемента */
+.reveal-stagger.is-visible > :nth-child(2) { transition-delay: 0.08s; }
+.reveal-stagger.is-visible > :nth-child(3) { transition-delay: 0.16s; }
+.reveal-stagger.is-visible > :nth-child(4) { transition-delay: 0.24s; }
+.reveal-stagger.is-visible > :nth-child(5) { transition-delay: 0.32s; }
+.reveal-stagger.is-visible > :nth-child(6) { transition-delay: 0.40s; }
+.reveal-stagger.is-visible > :nth-child(7) { transition-delay: 0.48s; }
+.reveal-stagger.is-visible > :nth-child(8) { transition-delay: 0.56s; }
+
+/* Блок, который был виден сразу при открытии страницы, появляется без анимации
+   (класс no-anim ставит script.js на пару кадров) */
+.no-anim,
+.no-anim > * {
+  transition: none !important;
+}
+
+
+/* =============================================================
+   20. Если в системе включено «уменьшить движение» —
+       отключаем плавную прокрутку, переходы и анимации
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html,
+  html.is-smooth {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    transition-delay: 0s !important;
+    animation-duration: 0.01ms !important;
+    animation-delay: 0s !important;
+  }
+}
+
+
+/* =============================================================
+   ПЛАВНЫЙ ПЕРЕХОД МЕЖДУ СТРАНИЦАМИ (главная ↔ магазин)
+   Новая страница плавно проявляется. При клике на ссылку другой
+   страницы сайта script.js добавляет класс is-leaving — текущая
+   страница за 0.15 с гаснет до цвета фона, и только потом открывается
+   новая. Работает во всех браузерах; при «уменьшить движение» отключено
+   ============================================================= */
+@keyframes page-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+body {
+  animation: page-in 0.3s var(--ease) backwards;   /* backwards: после проявления не мешает затуханию */
+}
+
+html.is-leaving body {
+  opacity: 0;
+  transition: opacity 0.15s ease-in;
+}
+
+
+/* =============================================================
+   v4-booking: общие мелочи DEMO-версии
+   ============================================================= */
+
+/* Плашка DEMO над шапкой (на всех страницах) */
+.demo-bar {
+  padding: 8px var(--gutter);
+  background: var(--dark);
+  color: var(--light);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Пометка «пример» рядом с телефоном и т.п. */
+.sample-tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+/* В кнопке пометка без рамки */
+.sample-tag--inline {
+  padding: 0;
+  border: 0;
+  font-size: inherit;
+  color: inherit;
+  opacity: 0.7;
+}
+
+/* Карточка услуги стала кнопкой (открывает запись) — убираем вид кнопки */
+button.service-card__link {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Кнопка «Записаться» в подвале выглядит как ссылки рядом */
+.footer__btn {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--light);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.footer__btn:hover {
+  text-decoration: underline;
+}
+
+/* Ссылки в контактах и подвале — зона нажатия не меньше 44px по высоте */
+.contacts__list a,
+.footer__links a,
+.footer__btn {
+  display: inline-block;
+  padding-block: 11px;
+}
+
+
+/* =============================================================
+   v5: пометки, отзывы-примеры, плитка магазина
+   ============================================================= */
+
+/* Маленькая пометка у цены или отзыва: «уточнить, пример» */
+.price-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Заметная пометка над отзывами-примерами */
+.reviews__example {
+  margin: -8px 0 24px;
+  padding: 12px 16px;
+  border: 2px dashed var(--dark);
+  border-radius: var(--radius);
+  background: var(--bg);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.gallery__note {
+  margin: -16px 0 24px;
+  color: var(--muted);
+}
+
